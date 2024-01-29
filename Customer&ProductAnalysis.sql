@@ -4,9 +4,9 @@
 
 WITH
 lowstock AS (SELECT productcode, productname, 
-       round((select sum(quantityordered)*1.0 from orderdetails o where  p.productcode = o.productcode)/quantityinstock,2)  as stock
+       round((SELECT sum(quantityordered)*1.0 FROM orderdetails o WHERE  p.productcode = o.productcode)/quantityinstock,2)  AS stock
   FROM products p
-  group by productcode
+  GROUP BY productcode
 
 ),
 prodperf AS (SELECT productCode, 
@@ -20,38 +20,38 @@ prodperf AS (SELECT productCode,
     FROM lowstock  AS ls
     JOIN prodperf AS pf
       ON ls.productCode = pf.productcode
-      order by prod_perf desc
+      ORDER BY prod_perf DESC
    LIMIT 10;
 
 --Question 2: How Should We Match Marketing and Communication Strategies to Customer Behavior?
 
 
 --Find most profitable customers
-with money as (select o.customerNumber, SUM(quantityOrdered * (priceEach - buyPrice)) as profit from products p
-join orderdetails od 
-on p.productCode=od.productCode
-join orders o
-on od.orderNumber=o.orderNumber
-group by customerNumber
-order by profit desc)
+WITH money AS (SELECT o.customerNumber, SUM(quantityOrdered * (priceEach - buyPrice)) AS profit FROM products p
+JOIN orderdetails od 
+ON p.productCode=od.productCode
+JOIN orders o
+ON od.orderNumber=o.orderNumber
+GROUP customerNumber
+ORDER BY profit DESC)
 
-select contactLastName, contactfirstname, city, country, profit from customers c
-join money
-on c.customerNumber=money.customerNumber
-order by profit desc
-limit 5
+SELECT contactLastName, contactfirstname, city, country, profit FROM customers c
+JOIN money
+ON c.customerNumber=money.customerNumber
+ORDER BY profit DESC
+LIMIT 5
 
 --Question 3: How Much Can We Spend on Acquiring New Customers?
 
-with money as (select o.customerNumber, SUM(quantityOrdered * (priceEach - buyPrice)) as profit from products p
-join orderdetails od 
-on p.productCode=od.productCode
-join orders o
-on od.orderNumber=o.orderNumber
-group by customerNumber
-order by profit desc)
+WITH money AS (SELECT o.customerNumber, SUM(quantityOrdered * (priceEach - buyPrice)) AS profit FROM products p
+JOIN orderdetails od 
+ON p.productCode=od.productCode
+JOIN orders o
+ON od.orderNumber=o.orderNumber
+GROUP BY customerNumber
+ORDER BY profit DESC)
 
-select avg(profit)as ltv from money
+SELECT avg(profit) AS ltv FROM money
 
 -answer: 39039.59 is customer Lifetime Value (LTV)
 
